@@ -1,0 +1,47 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <meta charset="UTF-8">
+  <title>Live Chat Demo</title>
+  <style>
+    body { font: sans-serif; background:#f0f0f0; padding:20px; }
+    #chat { background:#fff; padding:20px; border-radius:8px; max-width:500px; margin:auto; }
+    #messages { height:300px; overflow-y:auto; border:1px solid #ccc; padding:10px; margin-bottom:10px; }
+    input { padding:10px; width:75%; }
+    button { padding:10px; }
+  </style>
+</head>
+<body>
+  <div id="chat">
+    <h2>💬 Real-Time Chat Demo</h2>
+    <div id="messages"></div>
+    <input id="text" placeholder="Type your message">
+    <button onclick="sendMessage()">Send</button>
+  </div>
+
+  <script>
+    const name = prompt("Enter your name:") || "Guest";
+    const ws = new WebSocket("wss://<your-app-name>.onrender.com");
+
+    const msgDiv = document.getElementById("messages");
+    const text = document.getElementById("text");
+
+    ws.onmessage = e => {
+      const d = document.createElement("div");
+      d.textContent = e.data;
+      msgDiv.appendChild(d);
+      msgDiv.scrollTop = msgDiv.scrollHeight;
+    };
+
+    function sendMessage() {
+      if (!text.value.trim()) return;
+      ws.send(`${name}: ${text.value}`);
+      text.value = "";
+    }
+
+    text.addEventListener("keypress", e => {
+      if (e.key === "Enter") sendMessage();
+    });
+  </script>
+</body>
+</html>
